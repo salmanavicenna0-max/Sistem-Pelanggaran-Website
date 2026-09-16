@@ -1,62 +1,51 @@
-<!DOCTYPE html>
-<html lang="id" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Rekap & Laporan - Kesiswaan & BK</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-[#F5F9FA] text-[#182A3C] min-h-full antialiased font-sans">
+@extends('layouts.app')
 
-@include('layouts.sidebar')
-
-<main class="flex-1 overflow-y-auto p-6 md:p-8">
-    <div class="max-w-6xl mx-auto">
-
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-[#182A3C]">Cetak Rekap & Laporan</h2>
-                <div class="w-8 h-8 rounded-full bg-[#044A87] text-white flex items-center justify-center text-sm font-bold">
-                    {{ substr(auth()->user()->name, 0, 1) }}
-                </div>
-            </div>
-
-            <p class="text-sm text-[#64748B] mb-4">Pilih jenis laporan yang akan diekspor.</p>
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <a href="#" class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:bg-[#044A87] hover:text-white transition-colors p-6 flex items-center justify-center">
-                    <div class="w-12 h-12 rounded-lg bg-[#044A87] flex items-center justify-center group-hover:bg-[#0360A4] transition-colors">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-[#182A3C] group-hover:text-white">Cetak Rekap Poin</p>
-                        <p class="text-xs text-[#64748B]">Rekapitulasi poin siswa per kelas/tahun</p>
-                    </div>
-                </a>
-
-                <a href="#" class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:bg-[#044A87] hover:text-white transition-colors p-6 flex items-center justify-center">
-                    <div class="w-12 h-12 rounded-lg bg-[#044A87] flex items-center justify-center group-hover:bg-[#0360A4] transition-colors">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v10c7-6 7-6 14 0v-10m-7 3h5"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-[#182A3C] group-hover:text-white">Laporan Excel</p>
-                        <p class="text-xs text-[#64748B]">Ekspor data pelanggaran, prestasi, poin ke Excel</p>
-                    </div>
-                </a>
-
-                <a href="#" class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:bg-[#044A87] hover:text-white transition-colors p-6 flex items-center justify-center">
-                    <div class="w-12 h-12 rounded-lg bg-[#044A87] flex items-center justify-center group-hover:bg-[#0360A4] transition-colors">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v10c7-6 7-6 14 0v-10m-7 3h5"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-[#182A3C] group-hover:text-white">PDF & Kop Surat</p>
-                        <p class="text-xs text-[#64748B]">Laporan dengan kop surat resmi SMAN 6 Bandung</p>
-                    </div>
-                </a>
-            </div>
+@section('content')
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-[#182A3C]">Cetak Rekap & Laporan</h2>
+            <p class="text-sm text-[#64748B]">Ekspor dan cetak berkas laporan kedisiplinan dan prestasi resmi sekolah</p>
         </div>
     </div>
-</main>
 
-</body>
-</html>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 md:p-8">
+        <h3 class="text-base font-bold text-[#182A3C] mb-2">Pilih Format & Jenis Dokumen</h3>
+        <p class="text-sm text-[#64748B] mb-6">Pilih format laporan yang Anda butuhkan untuk dicetak atau diunduh ke format spreadsheet/dokumen.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <a href="{{ route('master.export.pdf') }}" target="_blank" class="group bg-slate-50 hover:bg-[#044A87] rounded-2xl border border-slate-200 p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+                <div class="w-12 h-12 rounded-xl bg-[#044A87]/10 text-[#044A87] group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-[#182A3C] group-hover:text-white text-base">Cetak Dokumen / PDF</p>
+                    <p class="text-xs text-[#64748B] group-hover:text-white/80 mt-1">Cetak rekap dengan kop surat resmi SMAN 6 Bandung</p>
+                </div>
+            </a>
+
+            <a href="{{ route('master.export.excel') }}" class="group bg-slate-50 hover:bg-[#044A87] rounded-2xl border border-slate-200 p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <p class="font-bold text-[#182A3C] group-hover:text-white text-base">Ekspor Excel (.xlsx)</p>
+                    </div>
+                    <p class="text-xs text-[#64748B] group-hover:text-white/80 mt-1">Ekspor seluruh mutasi poin dan pelanggaran ke file Excel</p>
+                </div>
+            </a>
+
+            <a href="{{ route('points.index') }}" class="group bg-slate-50 hover:bg-[#044A87] rounded-2xl border border-slate-200 p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+                <div class="w-12 h-12 rounded-xl bg-[#51C4C1]/20 text-[#0360A4] group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-[#182A3C] group-hover:text-white text-base">Rekapitulasi Poin</p>
+                    <p class="text-xs text-[#64748B] group-hover:text-white/80 mt-1">Lihat dan cetak tabel akumulasi poin per kelas</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+@endsection

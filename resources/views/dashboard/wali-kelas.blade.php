@@ -60,7 +60,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-[#182A3C]">{{ $s->name }} (NIS: {{ $s->nis }})</p>
-                        <p class="text-xs text-[#64748B]">Poin: {{ number_format($s->getCurrentPoints()) }} - {{ $s->getPointZone['name'] }}</p>
+                        <p class="text-xs text-[#64748B]">Poin: {{ number_format($s->getCurrentPoints()) }} - {{ $s->point_zone['name'] }}</p>
                     </div>
                 </div>
             @endforeach

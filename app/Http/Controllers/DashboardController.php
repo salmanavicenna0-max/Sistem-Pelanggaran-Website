@@ -24,7 +24,7 @@ class DashboardController extends Controller
             }
 
             $currentPoints = $student->getCurrentPoints();
-            $zone = $student->getPointZone;
+            $zone = $student->point_zone;
 
             // Recent transactions
             $recentTransactions = PointTransaction::query()
@@ -84,36 +84,62 @@ class DashboardController extends Controller
                 'name' => $s->name,
                 'nis' => $s->nis,
                 'currentPoints' => $s->getCurrentPoints(),
-                'zone' => $s->getPointZone['name'],
+                'zone' => $s->point_zone,
             ])->sortByDesc(fn ($s) => $s['currentPoints']);
 
             return view('dashboard.wali-kelas', compact('student', 'class', 'classStudents', 'classReports', 'classPointSummary'));
         }
 
         // --- KESISWAAN / BK ---
-        $totalStudents = Student::count();
-        $totalViolations = ViolationRule::where('is_active', true)->count();
-        $totalAchievements = AchievementRule::where('is_active', true)->count();
+        $classId = request('class_id');
+        $startDate = request('start_date');
+        $endDate = request('end_date');
+
+        $studentQuery = Student::query()
+            ->when($classId, fn ($q) => $q->where('class_id', $classId));
+
+        $totalStudents = $studentQuery->count();
+
+        $reportQuery = Report::query()
+            ->when($classId, function($q) use ($classId) {
+                $q->whereHas('student', fn($sq) => $sq->where('class_id', $classId));
+            })
+            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
 
         // Stats cards data
         $stats = [
             'total_students' => $totalStudents,
-            'total_reports' => Report::count(),
-            'pending_approval' => Report::where('status', 'pending')->count(),
-            'active_cases' => StudentCase::where('status', 'in_progress')->count(),
+            'total_reports' => (clone $reportQuery)->count(),
+            'pending_approval' => (clone $reportQuery)->where('status', 'pending')->count(),
+            'active_cases' => StudentCase::where('status', 'in_progress')
+                ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate))
+                ->when($classId, function($q) use ($classId) {
+                    $q->whereHas('report', function($rq) use ($classId) {
+                        $rq->whereHas('student', fn($sq) => $sq->where('class_id', $classId));
+                    });
+                })->count(),
         ];
 
         // Zone distribution chart data
-        $zoneDistribution = Student::withCount('pointTransactions')
+        $zoneDistribution = (clone $studentQuery)->withCount('pointTransactions')
             ->get()
-            ->map(fn ($s) => $s->getPointZone['name'])
+            ->map(fn ($s) => $s->point_zone['name'])
             ->countBy();
 
         $zoneOrder = ['Istimewa', 'Luar Biasa', 'Normal', 'Pembinaan 1', 'Pembinaan 2', 'Pembinaan 3', 'Pembinaan 4', 'Intervensi Khusus'];
         $zoneData = array_combine($zoneOrder, array_map(fn ($v) => $zoneDistribution[$v] ?? 0, $zoneOrder));
 
+        $statusDistribution = (clone $reportQuery)->pluck('status')->countBy();
+        $statusData = [
+            'Pending' => $statusDistribution['pending'] ?? 0,
+            'Approved' => $statusDistribution['approved'] ?? 0,
+            'Rejected' => $statusDistribution['rejected'] ?? 0,
+        ];
+
         // Top students by points
-        $topStudents = Student::with('user')
+        $topStudents = (clone $studentQuery)->with('user')
             ->withCount('pointTransactions')
             ->get()
             ->sortByDesc(fn ($s) => $s->getCurrentPoints())
@@ -121,10 +147,17 @@ class DashboardController extends Controller
 
         // Recent transactions for BK overview
         $recentTransactions = PointTransaction::query()
+            ->when($classId, function($q) use ($classId) {
+                $q->whereHas('student', fn($sq) => $sq->where('class_id', $classId));
+            })
+            ->when($startDate, fn($q) => $q->whereDate('transacted_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('transacted_at', '<=', $endDate))
             ->latest('transacted_at')
             ->take(10)
             ->get();
 
-        return view('dashboard.bk', compact('stats', 'zoneData', 'topStudents', 'recentTransactions'));
+        $classes = \App\Models\SchoolClass::orderBy('grade_level')->orderBy('name')->get();
+
+        return view('dashboard.bk', compact('stats', 'zoneData', 'statusData', 'topStudents', 'recentTransactions', 'classes'));
     }
 }

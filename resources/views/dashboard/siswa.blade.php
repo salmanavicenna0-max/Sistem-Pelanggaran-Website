@@ -15,7 +15,7 @@
         <!-- Current Points Card -->
         <div class="bg-[#F5F9FA] rounded-xl p-5 border-l-4 border-[#044A87] mb-4">
             <div class="text-sm text-[#64748B] mb-1">Saldo Poin Saat Ini</div>
-            <div class="text-3xl font-extrabold text-[#044A87]"> {{ number_format($currentPoints)} }} poin</div>
+            <div class="text-3xl font-extrabold text-[#044A87]">{{ number_format($currentPoints) }} poin</div>
             <div class="text-sm mt-1">
                 <span class="text-[#64748B]">Zona: </span>
                 <span class="font-medium text-{{ str_replace([' ', '-'], '', $zone['color']) ?? 'gray' }}">{{ $zone['name'] }}</span>

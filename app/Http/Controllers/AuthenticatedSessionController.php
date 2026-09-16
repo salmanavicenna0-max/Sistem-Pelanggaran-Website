@@ -25,8 +25,12 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $login = $request->string('login')->trim()->value();
-        $user = User::query()->where('username', $login)->first()
-            ?? Student::query()->where('nis', $login)->with('user')->first()?->user;
+        $user = User::query()
+            ->where('username', $login)
+            ->orWhere('email', $login)
+            ->orWhere('nip', $login)
+            ->first()
+            ?? Student::query()->where('nis', $login)->orWhere('nisn', $login)->with('user')->first()?->user;
 
         if (! $user instanceof User || ! $user->is_active || ! Hash::check($request->string('password')->value(), $user->password)) {
             return back()->withErrors(['login' => 'Username/NIS atau password tidak valid.'])->onlyInput('login');

@@ -80,4 +80,9 @@ class Student extends Model
             default => ['name' => 'Intervensi Khusus', 'color' => '#991B1B', 'bg' => 'bg-red-100 text-red-800 border-red-300', 'desc' => 'Kepala Sekolah & Rapat Dewan Guru'],
         };
     }
+
+    public function getPointZone(): array
+    {
+        return $this->getPointZoneAttribute();
+    }
 }

@@ -17,6 +17,11 @@ class SchoolClass extends Model
         'grade_level',
     ];
 
+    public function schoolYear(): BelongsTo
+    {
+        return $this->belongsTo(SchoolYear::class, 'school_year_id');
+    }
+
     public function homeroomTeacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'homeroom_teacher_id');

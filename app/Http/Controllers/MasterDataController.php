@@ -2,25 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\UpdatePasswordRequest;
-use App\Models\SchoolYear;
-use App\Models\SchoolClass;
-use App\Models\ViolationRule;
 use App\Models\AchievementRule;
-use App\Models\User;
-use App\Models\Student;
-use Illuminate\Http\Request;
+use App\Models\SchoolClass;
+use App\Models\SchoolYear;
+use App\Models\ViolationRule;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
 
 class MasterDataController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'active', 'password.changed']);
-    }
-
     // --- Aturan Disiplin & Prestasi ---
     public function rules(): View
     {
@@ -43,5 +32,17 @@ class MasterDataController extends Controller
     public function export(): View
     {
         return view('master.export');
+    }
+
+    public function exportPdf()
+    {
+        $students = \App\Models\Student::with('schoolClass', 'user')->get()->sortByDesc(fn($s) => $s->getCurrentPoints());
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('students'))->setPaper('a4', 'landscape');
+        return $pdf->stream('rekap-poin-siswa-'.date('YmdHis').'.pdf');
+    }
+
+    public function exportExcel()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PointTransactionsExport, 'rekap-mutasi-poin-'.date('YmdHis').'.xlsx');
     }
 }

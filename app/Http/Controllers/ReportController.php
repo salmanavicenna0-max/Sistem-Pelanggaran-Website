@@ -2,69 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\UpdatePasswordRequest;
+use App\Models\AchievementRule;
 use App\Models\Report;
+use App\Models\ReportAttachment;
 use App\Models\Student;
 use App\Models\ViolationRule;
-use App\Models\AchievementRule;
-use App\Models\ReportAttachment;
+use App\Services\PointTransactionService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ReportController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'active', 'password.changed']);
-    }
-
-    // --- SISWA: Buat laporan baru ---
+    // --- Buat laporan baru ---
     public function create(): View
     {
-        return view('reports.siswa-create');
+        $violationRules = ViolationRule::where('is_active', true)->orderBy('name')->get();
+        $achievementRules = AchievementRule::where('is_active', true)->orderBy('name')->get();
+        $students = Student::with(['user', 'schoolClass'])->where('is_active', true)->get();
+
+        return view('reports.siswa-create', compact('violationRules', 'achievementRules', 'students'));
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'student_nis' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:violation,achievement'],
-            'violation_rule_id' => ['required', 'exists:violation_rules,id', fn($val) => $request->type === 'violation'],
-            'achievement_rule_id' => ['required', 'exists:achievement_rules,id', fn($val) => $request->type === 'achievement'],
+            'violation_rule_id' => ['nullable', 'required_if:type,violation', 'exists:violation_rules,id'],
+            'achievement_rule_id' => ['nullable', 'required_if:type,achievement', 'exists:achievement_rules,id'],
             'occurred_on' => ['required', 'date'],
             'description' => ['required', 'string'],
-            'photo' => ['sometimes', 'image', 'max:2048', 'mimes:jpeg,png,jpg'],
+            'photo' => ['sometimes', 'nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg'],
         ]);
 
         $student = Student::where('nis', $validated['student_nis'])->firstOrFail();
-        $user = $student->user;
 
         $reportData = [
             'student_id' => $student->id,
-            'reported_by' => $user->id,
+            'reported_by' => auth()->id(),
             'verified_by' => null,
             'type' => $validated['type'],
             'occurred_on' => $validated['occurred_on'],
             'description' => $validated['description'],
             'status' => 'pending',
+            'violation_rule_id' => $validated['type'] === 'violation' ? $validated['violation_rule_id'] : null,
+            'achievement_rule_id' => $validated['type'] === 'achievement' ? $validated['achievement_rule_id'] : null,
         ];
-
-        if ($validated['type'] === 'violation') {
-            $reportData['violation_rule_id'] = $validated['violation_rule_id'];
-        } else {
-            $reportData['achievement_rule_id'] = $validated['achievement_rule_id'];
-        }
 
         $report = Report::query()->create($reportData);
 
         // Handle photo upload
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('report_photos', 'private');
+            $path = $request->file('photo')->store('report_photos', 'public');
             ReportAttachment::query()->create([
                 'report_id' => $report->id,
-                'uploaded_by' => $user->id,
-                'disk' => 'private',
+                'uploaded_by' => auth()->id(),
+                'disk' => 'public',
                 'path' => $path,
                 'original_name' => $request->file('photo')->getClientOriginalName(),
                 'mime_type' => $request->file('photo')->getClientOriginalMimeType(),
@@ -72,7 +66,7 @@ class ReportController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Laporan berhasil dikirim. Status: pending menunggu verifikasi BK.');
+        return redirect()->route('dashboard')->with('status', 'Laporan berhasil dikirim. Status: pending menunggu verifikasi BK.');
     }
 
     // --- BK / Kesiswaan: Daftar laporan pending ---
@@ -88,7 +82,7 @@ class ReportController extends Controller
     }
 
     // --- Verifikasi / Tolak Laporan ---
-    public function verify(Request $request, Report $report): \Illuminate\Http\RedirectResponse
+    public function verify(Request $request, Report $report, PointTransactionService $pointService): RedirectResponse
     {
         $validated = $request->validate([
             'status' => ['required', 'in:approved,rejected'],
@@ -102,43 +96,19 @@ class ReportController extends Controller
             'verified_at' => now(),
         ]);
 
-        // Jika approved, tambah/kurangi poin
+        // Jika approved, tambah/kurangi poin menggunakan service
         if ($validated['status'] === 'approved') {
-            $student = $report->student;
-            $currentPoints = $student->getCurrentPoints();
-            $newPoints = match ($report->type) {
-                'achievement' => $currentPoints + ($report->achievementRule?->points ?? 0),
-                'violation' => max(0, $currentPoints + ($report->violationRule?->points ?? 0)),
-            };
-
-            // Buat transaksi poin
-            $student->pointTransactions()->create([
-                'student_id' => $student->id,
-                'school_year_id' => $student->schoolClass->schoolYear->id,
-                'performed_by' => auth()->user()->id,
-                'reference_type' => Report::class,
-                'reference_id' => $report->id,
-                'type' => $report->type === 'achievement' ? 'achievement' : 'violation',
-                'points' => $report->type === 'achievement' ? ($report->achievementRule?->points ?? 0) : (-$report->violationRule?->points ?? 0),
-                'balance_before' => $currentPoints,
-                'balance_after' => $newPoints,
-                'description' => $report->type === 'achievement'
-                    ? 'Penambahan poin: ' . $report->description
-                    : 'Pengurangan poin: ' . $report->description,
-                'transacted_at' => now(),
-            ]);
-
-            // Update saldo siswa
-            $student->update(['is_active' => true]); // ensure active
+            $pointService->recordReportApproval($report, auth()->user()->id);
         }
 
-        return back()->with('status', 'Laporan ' . $validated['status'] . '. ' . ($validated['status'] === 'approved' ? 'Poin telah diperbarui.' : 'Catatan verifikasi tercatat.'));
+        return back()->with('status', 'Laporan '.$validated['status'].'. '.($validated['status'] === 'approved' ? 'Poin telah diperbarui.' : 'Catatan verifikasi tercatat.'));
     }
 
     // --- Lihat detail laporan ---
     public function show(Report $report): View
     {
-        $report->load(['student.user', 'violationRule', 'achievementRule', 'attachments']);
+        $report->load(['student.user', 'violationRule', 'achievementRule', 'attachments', 'studentCase']);
+
         return view('reports.show', compact('report'));
     }
 }

@@ -1,0 +1,2589 @@
+PRODUCT REQUIREMENTS DOCUMENT
+
+
+
+Pencatatan Pelanggaran Siswa SMAN 6 Bandung
+
+
+
+1. Executive Summary &amp; Context
+
+
+
+Nama Produk: Pencatatan Pelanggaran Siswa SMAN 6 Bandung
+
+
+
+Problem Statement: Membangun sistem pencatatan poin siswa yang cepat, terpusat, dan mudah digunakan sehingga guru dapat melaporkan kejadian dengan mudah dan BK/Kesiswaan dapat memverifikasi serta memantau seluruh riwayat poin siswa secara terstruktur.
+
+
+
+Goal / Objective: Pencatatan poin terhadap siswa menjadi lebih simpel dan to the point. Kesiswaan/BK bisa melihat seluruh riwayat poin dari seluruh siswa.
+
+
+
+Success Metrics (KPI): Guru tidak kesulitan mencatat setiap poin siswa. (Catatan: metrik ini masih kualitatif — lihat Catatan Reviewer.)
+
+
+
+2. Target User &amp; Persona
+
+
+
+Primary User: Kesiswaan &amp; BK, Guru, Siswa
+
+
+User Pain Points:
+
+
+
+Harus mendata seluruh siswa di sekolahnya
+
+
+
+Membuat akun untuk setiap siswa
+
+
+
+Harus login
+
+
+
+3. Scope of Work (Ruang Lingkup)
+
+
+
+In-Scope (dikerjakan di versi ini)
+
+
+
+Auth dasar (NIS + Password)
+
+
+
+Input pencatatan pelanggaran/prestasi cepat
+
+
+
+Laporan bulanan simpel (pie chart)
+
+
+
+Fitur ekspor ke PDF/Excel
+
+
+
+Input siswa berdasarkan Excel dengan format tertentu (bulk import)
+
+
+
+Out-of-Scope (ditunda)
+
+
+
+Integrasi ke mobile app
+
+
+Catatan: modul Case &amp; Pembinaan dibahas rinci di bagian 9–13 dokumen ini, namun belum dicantumkan secara eksplisit di In-Scope / Out-of-Scope — perlu diputuskan dan ditulis ulang di sini.
+
+
+
+4. User Journey &amp; Functional Requirements
+
+
+
+Module A — Authentication &amp; Onboarding
+
+
+US-01 (Multi-Role Auth): Sistem mengenali 3 role utama: Admin/BK, Guru, dan Siswa. (Wali Kelas bukan role terpisah secara database — ia adalah Guru yang ditandai sebagai wali melalui field classes.homeroom_teacher_id.)
+
+
+US-02 — Pengajuan Laporan Kejadian (Guru &amp; Siswa)
+
+
+As a: Guru / Siswa
+
+
+I want to: melaporkan indikasi pelanggaran atau prestasi siswa lain lengkap dengan deskripsi (dan foto bukti jika ada)
+
+
+So that: tim BK bisa menindaklanjuti dan memverifikasi kejadian tersebut
+
+
+Acceptance Criteria:
+
+
+
+Form lapor berisi: pilih siswa terlapor/diapresiasi, tanggal, jenis (pelanggaran/prestasi), deskripsi kejadian, lampiran foto (opsional)
+
+
+
+Laporan yang baru dibuat otomatis berstatus PENDING
+
+
+
+Poin siswa belum berubah di tahap ini
+
+
+US-03 — Approval &amp; Penentuan Poin Final oleh BK
+
+
+As a: Tim BK / Kesiswaan
+
+
+I want to: meninjau laporan masuk, menyetujui/menolak, dan menetapkan bobot poinnya
+
+
+So that: poin yang masuk ke riwayat siswa benar-benar valid dan adil
+
+
+Acceptance Criteria:
+
+
+
+Tersedia halaman khusus Inbox Verifikasi untuk Tim BK
+
+
+
+BK bisa mengeklik Approve (lalu memilih kategori/bobot poin resmi) atau Reject
+
+
+
+Setelah di-Approve, sistem otomatis memutakhirkan total poin resmi siswa terkait
+
+
+US-04 — Buku Catatan Digital Siswa
+
+
+As a: Siswa
+
+
+I want to: melihat total akumulasi poin pribadi dan rincian riwayatnya
+
+
+So that: saya sadar akan status kedisiplinan dan prestasi saya di sekolah
+
+
+Acceptance Criteria:
+
+
+
+(belum didefinisikan — lihat Catatan Reviewer di akhir dokumen)
+
+
+US-05 — Bulk Import Data Siswa &amp; Guru (Admin/BK)
+
+
+As a: Admin / Tim BK
+
+
+I want to: mengunggah file Excel berisi data siswa &amp; guru
+
+
+So that: akun dan data seluruh siswa/guru terbuat secara massal tanpa input manual
+
+
+Acceptance Criteria:
+
+
+
+Tersedia tombol &quot;Download Template Excel Resmi&quot;
+
+
+
+Sistem memvalidasi format file .xlsx/.csv
+
+
+
+Menampilkan pesan error jika ada NIS/NIP ganda atau kolom kosong
+
+
+US-06 — Manajemen Master Data Pelanggaran &amp; Prestasi (BK)
+
+
+As a: Tim BK
+
+
+I want to: mengelola daftar kategori pelanggaran/prestasi beserta bobot poinnya
+
+
+So that: penetapan poin saat verifikasi laporan menjadi konsisten
+
+
+Acceptance Criteria:
+
+
+
+BK bisa menambah, mengedit, dan menghapus jenis pelanggaran/prestasi dan nilai poinnya
+
+
+US-07 — Dashboard Analytics &amp; Ekspor Laporan (BK)
+
+
+As a: Tim BK / Kesiswaan
+
+
+I want to: melihat visualisasi grafik (pie chart) dan mengunduh rekapan data (PDF/Excel)
+
+
+So that: laporan perkembangan kedisiplinan siswa siap dicetak untuk rapat/surat panggilan
+
+
+Acceptance Criteria:
+
+
+
+Pie chart menampilkan proporsi kategori pelanggaran teratas
+
+
+
+Ada filter berdasarkan rentang tanggal dan kelas
+
+
+
+Ekspor PDF menyertakan kop surat resmi SMAN 6 Bandung
+
+
+US-08 — First Time Login Password Reset
+
+
+As a: User yang baru pertama kali login menggunakan password default
+
+
+I want to: diwajibkan mengganti password baru
+
+
+So that: akun saya tidak mudah disalahgunakan oleh orang lain
+
+
+Acceptance Criteria:
+
+
+
+Sistem mendeteksi flag is_first_login = true
+
+
+
+User tidak bisa mengakses menu lain sebelum mengganti password default
+
+
+
+Siswa hanya bisa melihat data dirinya sendiri (read-only)
+
+
+
+Menampilkan indikator status (misal: Aman, Peringatan 1, Peringatan 2, dst. berdasarkan akumulasi poin)
+
+
+
+5. Non-Functional Requirements (NFR)
+
+
+
+Performance: loading halaman utama harus di bawah 2 detik
+
+
+
+Security: password harus di-hash (misal bcrypt), data sensitif memakai HTTPS
+
+
+
+Compatibility: responsif di web (mobile, tablet, desktop) atau mendukung iOS versi X &amp; Android versi Y
+
+
+Catatan: risiko &quot;Lonjakan Akses / Server Down saat rekapitulasi akhir semester&quot; sudah diidentifikasi di bagian Risiko, tapi belum punya NFR terkait (target concurrent users, strategi caching, dsb). Perlu ditambahkan.
+
+
+
+6. UI/UX Color
+
+Token
+
+HEX
+
+Fungsi
+
+Background
+
+#F5F9FA
+
+Background utama
+
+Surface
+
+#FFFFFF
+
+Card, table, form, modal
+
+Primary
+
+#044A87
+
+Sidebar, navbar, tombol utama
+
+Primary Light
+
+#0360A4
+
+Hover, active, link
+
+Secondary
+
+#51C4C1
+
+Accent, highlight, progress
+
+Secondary Dark
+
+#359594
+
+Hover secondary, icon
+
+Text
+
+#182A3C
+
+Heading &amp; teks utama
+
+Text Secondary
+
+#64748B
+
+Deskripsi &amp; metadata
+
+Success
+
+#16A36A
+
+Achievement / poin bertambah
+
+Danger
+
+#D64545
+
+Pelanggaran / poin berkurang
+
+Warning
+
+#E9A23B
+
+Peringatan
+
+Info
+
+#1683C7
+
+Informasi umum
+
+
+
+
+
+
+🟦 Primary — #044A87
+
+
+Identitas utama aplikasi. Digunakan untuk sidebar, navbar, primary button, judul section tertentu, dan active navigation. Ini warna yang paling sering terlihat.
+
+
+
+🩵 Secondary — #51C4C1
+
+
+Berperan sebagai accent. Digunakan untuk highlight, progress bar, icon tertentu, badge positif, dan elemen dekoratif. Jangan dijadikan warna utama semua tombol.
+
+
+
+⚪ Background — #F5F9FA &amp; Surface — #FFFFFF
+
+
+Background menjadi &quot;kanvas&quot; aplikasi (body background), sementara Surface (putih) dipakai untuk card, table, form, modal, dropdown, dan panel — sehingga interface terasa bersih dan tidak seperti kumpulan kotak putih di atas putih.
+
+
+
+Status Colors
+
+
+
+🟢 Success #16A36A — achievement, poin bertambah, approved, case selesai, berhasil
+
+
+
+🔴 Danger #D64545 — pelanggaran, poin berkurang, rejected, error
+
+
+
+🟠 Warning #E9A23B — peringatan, pending, poin mendekati batas tertentu, perlu perhatian
+
+
+
+🔵 Info #1683C7 — informasi umum, tips, status informatif
+
+
+Dengan begitu user bisa mengenali makna warna tanpa membaca semuanya.
+
+
+
+Glassmorphism — gunakan sedikit saja
+
+
+Contoh penerapan: login card, modal, floating panel, dashboard highlight, user profile panel. Efeknya berupa background blur, transparency ringan, border putih/transparan, dan shadow lembut.
+
+
+Tapi jangan: seluruh sidebar transparan, seluruh tabel transparan, seluruh halaman blur, atau setiap card memakai glass effect — karena data seperti histori poin akan sulit dibaca.
+
+
+
+Hierarki Warna
+
+
+
+Primary — #044A87
+
+
+
+Secondary — #51C4C1
+
+
+
+Neutral — #F5F9FA / #FFFFFF
+
+
+
+Text — #182A3C / #64748B
+
+
+
+Status — Success / Danger / Warning / Info
+
+
+Aplikasi didominasi biru + putih, turquoise sebagai aksen, dan warna merah/hijau/oranye hanya muncul ketika punya makna.
+
+
+
+Kesimpulan Visual
+
+
+UI/UX menggunakan gaya Modern, Professional, Clean, dan Education Dashboard dengan penggunaan Glassmorphism secara terbatas sebagai aksen. Warna utama menggunakan Deep Blue #044A87 yang dipadukan dengan Turquoise #51C4C1, background lembut #F5F9FA, dan surface putih #FFFFFF. Warna hijau, merah, oranye, dan biru digunakan sebagai semantic colors untuk membedakan status achievement, pelanggaran, peringatan, dan informasi.
+
+
+
+7. Assumptions, Dependencies &amp; Risks
+
+
+
+Assumptions
+
+
+
+Koneksi &amp; Perangkat: pihak sekolah (BK, Guru) dan Siswa memiliki perangkat (HP/laptop) serta koneksi internet yang stabil saat mengakses aplikasi web.
+
+
+
+Kerapian Data Master: pihak sekolah (BK/Admin) sudah memiliki data induk siswa dan guru yang rapi (format .xlsx/.csv lengkap dengan NIS/NIP) untuk dimuat ke sistem via bulk import.
+
+
+
+Dependencies
+
+
+
+Spreadsheet Parser Engine: library pemroses file (misal ExcelJS / SheetJS / PhpSpreadsheet) untuk membaca dan mengolah data dari template Excel saat fitur bulk import.
+
+
+
+PDF Engine / Print Module: library cetak/generate PDF (misal Browsershot / Dompdf / jsPDF) untuk mencetak surat pemanggilan atau laporan rekapitulasi poin ber-kop surat resmi.
+
+
+
+Penyimpanan Berkas (Cloud/Local Storage): layanan storage (misal Firebase Storage, Supabase, AWS S3, atau local server storage sekolah) untuk menampung lampiran bukti foto pelanggaran/prestasi.
+
+
+
+Database &amp; Infrastructure: server database (misal MySQL) yang reliable untuk menyimpan riwayat transaksi poin yang terintegrasi.
+
+
+
+Risks
+
+Risiko
+
+Dampak
+
+Rencana Mitigasi
+
+Laporan Palsu / Spam dari Siswa (siswa asal melaporkan teman atau membuat laporan bohong)
+
+Sedang
+
+Laporan tidak langsung mengubah poin, melainkan masuk ke status PENDING. Tim BK berhak melakukan Reject jika laporan tidak disertai bukti valid.
+
+Format Excel Impor Tidak Sesuai (Guru/BK salah upload kolom atau beda format file)
+
+Tinggi
+
+Sistem menyediakan tombol &quot;Download Template Excel Resmi&quot; dan memberikan error validation mendetail jika ada baris data yang salah.
+
+Penyalahgunaan Akun Siswa (siswa login pakai NIS temannya karena password belum diganti)
+
+Tinggi
+
+Mewajibkan fitur Change Password saat pertama kali login dan menambahkan audit trail (pencatatan log pelapor asli).
+
+Lonjakan Akses / Server Down (terjadi saat rekapitulasi akhir semester atau kenaikan kelas)
+
+Sedang
+
+Penggunaan skema caching dan optimasi query database untuk penarikan laporan secara bersamaan.
+
+
+
+8. Tech &amp; Stack
+
+
+
+Framework: Laravel, VueJS, TailwindCSS (framework JS tambahan bila dibutuhkan)
+
+
+
+Bahasa: PHP, JS, Blade
+
+
+
+9. Struktur Database Utama
+
+
+Total: 10 tabel, 89 atribut. Skema menggunakan pola reference_type + reference_id (polymorphic) pada pointTransactions, dengan validasi relasi dilakukan di application layer, bukan foreign key SQL.
+
+
+
+9.1 users
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+username
+
+VARCHAR(50)
+
+NOT NULL, UNIQUE
+
+password
+
+VARCHAR(255)
+
+NOT NULL
+
+name
+
+VARCHAR(100)
+
+NOT NULL
+
+role
+
+ENUM(&apos;kesiswaan_bk&apos;,&apos;guru&apos;,&apos;siswa&apos;)
+
+NOT NULL
+
+is_active
+
+BOOLEAN
+
+NOT NULL, DEFAULT TRUE
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.2 students
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+user_id
+
+BIGINT UNSIGNED
+
+FK, UNIQUE, NOT NULL
+
+nisn
+
+VARCHAR(20)
+
+NOT NULL, UNIQUE
+
+name
+
+VARCHAR(100)
+
+NOT NULL
+
+class_id
+
+BIGINT UNSIGNED
+
+FK, NOT NULL
+
+status
+
+ENUM(&apos;aktif&apos;,&apos;lulus&apos;,&apos;nonaktif&apos;,&apos;pindah&apos;)
+
+NOT NULL, DEFAULT &apos;aktif&apos;
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.3 classes
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+name
+
+VARCHAR(20)
+
+NOT NULL
+
+grade
+
+TINYINT UNSIGNED
+
+NOT NULL
+
+school_year_id
+
+BIGINT UNSIGNED
+
+FK, NOT NULL
+
+homeroom_teacher_id
+
+BIGINT UNSIGNED
+
+FK → users.id, NULL
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.4 schoolYears
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+name
+
+VARCHAR(9)
+
+NOT NULL, UNIQUE — contoh: 2026/2027
+
+start_date
+
+DATE
+
+NOT NULL
+
+end_date
+
+DATE
+
+NOT NULL
+
+is_active
+
+BOOLEAN
+
+NOT NULL, DEFAULT FALSE
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.5 violationRules
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+code
+
+VARCHAR(10)
+
+NOT NULL, UNIQUE
+
+name
+
+VARCHAR(150)
+
+NOT NULL
+
+points
+
+INT
+
+NOT NULL
+
+severity
+
+ENUM(&apos;ringan&apos;,&apos;sedang&apos;,&apos;berat&apos;,&apos;sangat_berat&apos;,&apos;khusus&apos;)
+
+NOT NULL
+
+initial_level
+
+TINYINT UNSIGNED
+
+NOT NULL
+
+description
+
+TEXT
+
+NULL
+
+is_active
+
+BOOLEAN
+
+NOT NULL, DEFAULT TRUE
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.6 achievementRules
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+code
+
+VARCHAR(10)
+
+NOT NULL, UNIQUE
+
+name
+
+VARCHAR(150)
+
+NOT NULL
+
+points
+
+INT
+
+NOT NULL
+
+pillar
+
+TINYINT UNSIGNED
+
+NOT NULL
+
+description
+
+TEXT
+
+NULL
+
+is_active
+
+BOOLEAN
+
+NOT NULL, DEFAULT TRUE
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.7 reports
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+student_id
+
+BIGINT UNSIGNED
+
+FK → students.id, NOT NULL
+
+violation_rule_id
+
+BIGINT UNSIGNED
+
+FK → violationRules.id, NOT NULL
+
+reported_by
+
+BIGINT UNSIGNED
+
+FK → users.id, NOT NULL
+
+description
+
+TEXT
+
+NOT NULL
+
+incident_date
+
+DATE
+
+NOT NULL
+
+status
+
+ENUM(&apos;pending&apos;,&apos;approved&apos;,&apos;rejected&apos;)
+
+NOT NULL, DEFAULT &apos;pending&apos;
+
+verified_by
+
+BIGINT UNSIGNED
+
+FK → users.id, NULL
+
+verified_at
+
+TIMESTAMP
+
+NULL
+
+verification_note
+
+TEXT
+
+NULL
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.8 pointTransactions
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+student_id
+
+BIGINT UNSIGNED
+
+FK → students.id, NOT NULL
+
+type
+
+ENUM(&apos;violation&apos;,&apos;achievement&apos;,&apos;reversal&apos;,&apos;correction&apos;)
+
+NOT NULL
+
+reference_type
+
+VARCHAR(50)
+
+NOT NULL — contoh: report, achievement, point_transaction
+
+reference_id
+
+BIGINT UNSIGNED
+
+NOT NULL — divalidasi di application layer
+
+points
+
+INT
+
+NOT NULL
+
+balance_before
+
+INT
+
+NOT NULL
+
+balance_after
+
+INT
+
+NOT NULL
+
+created_by
+
+BIGINT UNSIGNED
+
+FK → users.id, NOT NULL
+
+note
+
+TEXT
+
+NULL
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.9 cases
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+student_id
+
+BIGINT UNSIGNED
+
+FK → students.id, NOT NULL
+
+report_id
+
+BIGINT UNSIGNED
+
+FK → reports.id, NULL
+
+case_type
+
+VARCHAR(50)
+
+NOT NULL
+
+status
+
+ENUM(&apos;open&apos;,&apos;on_progress&apos;,&apos;closed&apos;)
+
+NOT NULL, DEFAULT &apos;open&apos;
+
+severity
+
+ENUM(&apos;ringan&apos;,&apos;sedang&apos;,&apos;berat&apos;,&apos;sangat_berat&apos;,&apos;khusus&apos;)
+
+NOT NULL
+
+start_date
+
+DATE
+
+NOT NULL
+
+target_date
+
+DATE
+
+NULL
+
+closed_at
+
+TIMESTAMP
+
+NULL
+
+created_by
+
+BIGINT UNSIGNED
+
+FK → users.id, NOT NULL
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+updated_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+
+
+
+
+
+9.10 caseActions
+
+Atribut
+
+Tipe Data SQL
+
+Constraint
+
+id
+
+BIGINT UNSIGNED
+
+PK, AUTO_INCREMENT
+
+case_id
+
+BIGINT UNSIGNED
+
+FK → cases.id, NOT NULL
+
+action_type
+
+VARCHAR(50)
+
+NOT NULL
+
+description
+
+TEXT
+
+NOT NULL
+
+performed_by
+
+BIGINT UNSIGNED
+
+FK → users.id, NOT NULL
+
+action_date
+
+DATE
+
+NOT NULL
+
+result
+
+TEXT
+
+NULL
+
+created_at
+
+TIMESTAMP
+
+DEFAULT CURRENT_TIMESTAMP
+
+
+
+
+
+
+Rekap Jumlah Atribut per Tabel
+
+Tabel
+
+Jumlah Atribut
+
+users
+
+8
+
+students
+
+8
+
+classes
+
+7
+
+schoolYears
+
+7
+
+violationRules
+
+9
+
+achievementRules
+
+9
+
+reports
+
+12
+
+pointTransactions
+
+11
+
+cases
+
+11
+
+caseActions
+
+7
+
+Total
+
+89
+
+
+
+10. Relasi Antar Tabel (ERD)
+
+
+Relasi kardinalitas antar tabel:
+
+No
+
+Relasi
+
+Kardinalitas
+
+Keterangan
+
+1
+
+users → students
+
+1 : 1
+
+Satu akun siswa terkait satu data siswa
+
+2
+
+users → classes
+
+1 : N
+
+Satu guru dapat menjadi wali kelas pada beberapa data kelas
+
+3
+
+schoolYears → classes
+
+1 : N
+
+Satu tahun ajaran memiliki banyak kelas
+
+4
+
+classes → students
+
+1 : N
+
+Satu kelas memiliki banyak siswa
+
+5
+
+students → reports
+
+1 : N
+
+Satu siswa dapat memiliki banyak laporan
+
+6
+
+violationRules → reports
+
+1 : N
+
+Satu aturan pelanggaran dapat digunakan pada banyak laporan
+
+7
+
+users → reports (reported_by)
+
+1 : N
+
+Satu pengguna dapat membuat banyak laporan
+
+8
+
+users → reports (verified_by)
+
+1 : N
+
+Satu pengguna Kesiswaan/BK dapat memverifikasi banyak laporan
+
+9
+
+students → pointTransactions
+
+1 : N
+
+Satu siswa memiliki banyak transaksi poin
+
+10
+
+users → pointTransactions
+
+1 : N
+
+Satu pengguna dapat membuat banyak transaksi
+
+11
+
+students → cases
+
+1 : N
+
+Satu siswa dapat memiliki banyak kasus
+
+12
+
+reports → cases
+
+1 : 0..1
+
+Satu laporan dapat tidak memiliki kasus atau menghasilkan satu kasus
+
+13
+
+users → cases
+
+1 : N
+
+Satu pengguna dapat membuat banyak kasus
+
+14
+
+cases → caseActions
+
+1 : N
+
+Satu kasus dapat memiliki banyak tindakan
+
+15
+
+users → caseActions
+
+1 : N
+
+Satu pengguna dapat melakukan banyak tindakan
+
+
+
+Struktur Hierarki Data (ringkas)
+
+
+
+schoolYears
+
+
+
+classes (dimiliki oleh schoolYears; wali kelas = users dengan role guru)
+
+
+
+students (dimiliki oleh classes, 1:1 dengan users)
+
+
+
+reports (dibuat oleh users, mengacu ke violationRules)
+
+
+
+cases (opsional, dihasilkan dari reports atau dibuat langsung oleh BK)
+
+
+
+caseActions (riwayat tindakan dalam satu case)
+
+
+
+pointTransactions (dihasilkan dari reports/achievement yang disetujui)
+
+
+
+achievementRules (referensi logis dari pointTransactions, bukan FK langsung)
+
+
+
+11. Validasi Data
+
+
+Validasi data bertujuan memastikan seluruh data yang masuk ke sistem valid, konsisten, tidak duplikat, dan sesuai dengan hak akses serta aturan sistem.
+
+Kelompok
+
+Validasi Utama
+
+User &amp; Identitas
+
+username, NISN, dan kode aturan harus unik; data wajib diisi; akun harus aktif
+
+Kelas &amp; Tahun Ajaran
+
+Siswa hanya terhubung ke kelas yang valid; kelas terkait tahun ajaran yang valid; wali kelas harus berupa user dengan role Guru
+
+Violation &amp; Achievement Rules
+
+Kode harus unik; nilai poin sesuai jenis aturan; aturan yang tidak aktif tidak dapat digunakan untuk transaksi baru
+
+Reports
+
+Laporan harus memiliki siswa, pelapor, dan aturan pelanggaran yang valid; status hanya pending/approved/rejected; hanya Kesiswaan/BK yang dapat memverifikasi
+
+Point Transactions
+
+Transaksi hanya untuk siswa valid; balance_after = balance_before + points; violation bernilai negatif, achievement positif; transaksi yang sudah tercatat tidak dihapus
+
+Cases
+
+Case harus terkait siswa; status harus valid; target_date tidak boleh sebelum start_date; case yang ditutup memiliki closed_at
+
+Case Actions
+
+Action harus terkait case yang valid dan memiliki pelaksana; tindakan dicatat sebagai histori dan tidak menghapus tindakan sebelumnya
+
+
+
+Aturan Penting
+
+
+
+Data master harus unik — username, NISN, kode pelanggaran, dan kode achievement tidak boleh memiliki duplikat.
+
+
+
+Foreign key harus valid — setiap student_id, class_id, report_id, case_id, dan FK lainnya harus mengacu pada data yang benar-benar ada.
+
+
+
+Hak akses ikut divalidasi — guru boleh membuat laporan, tetapi tidak boleh memverifikasi laporan atau menentukan poin. Verifikasi hanya dilakukan Kesiswaan/BK.
+
+
+
+Laporan dan transaksi poin dipisahkan — reports yang masih pending atau rejected tidak boleh mengubah saldo poin. Poin baru berubah setelah laporan disetujui.
+
+
+
+Histori poin tidak boleh dihapus — kesalahan pada transaksi diperbaiki dengan reversal/correction, bukan menghapus atau mengubah transaksi lama.
+
+
+
+Saldo poin harus konsisten — balance_after = balance_before + points, sehingga sistem selalu bisa mengetahui asal-usul saldo siswa.
+
+
+
+Status harus konsisten — laporan hanya boleh pending → approved atau pending → rejected; case hanya boleh open → on_progress → closed.
+
+
+
+Validasi reference_type/reference_id dilakukan di aplikasi — karena menggunakan polymorphic reference, aplikasi wajib memastikan kombinasi reference_type + reference_id menunjuk ke sumber transaksi yang benar.
+
+
+Kesimpulan: validasi data dilakukan pada dua lapisan — database (integritas dasar: PK, FK, UNIQUE, NOT NULL, tipe data) dan aplikasi (validasi bisnis: hak akses, status laporan, perhitungan saldo poin, validasi reference_type/reference_id, serta aturan proses pembinaan).
+
+
+
+12. Mekanisme Poin
+
+
+
+Setiap siswa memulai tahun ajaran dengan 2000 poin. (Catatan: belum dijelaskan apakah saldo direset atau dibawa ke tahun ajaran berikutnya — lihat Catatan Reviewer.)
+
+
+
+Pelanggaran mengurangi poin sesuai nilai pada violationRules, sedangkan achievement menambah poin sesuai nilai pada achievementRules.
+
+
+
+Laporan tidak langsung mengubah poin. Poin hanya berubah setelah laporan diverifikasi dan disetujui oleh Kesiswaan/BK.
+
+
+
+Setiap perubahan poin dicatat sebagai pointTransaction yang menyimpan nilai poin sebelum dan sesudah transaksi.
+
+
+
+Riwayat transaksi tidak boleh dihapus atau diubah. Kesalahan diperbaiki menggunakan transaksi reversal atau correction agar seluruh histori tetap tercatat.
+
+
+
+Saldo poin dapat lebih dari 2000 dan tetap dianggap valid.
+
+
+
+Status zona poin ditentukan berdasarkan saldo saat ini (lihat tabel di bawah).
+
+
+
+Zona poin tidak menentukan severity atau penanganan kasus. Penanganan tetap mengikuti aturan dan jenjang pada SOP.
+
+
+
+Target achievement dalam pembinaan bukan batas maksimal poin. Siswa tetap dapat memperoleh achievement lain sesuai ketentuan sistem.
+
+
+
+Zona Poin
+
+Rentang Saldo
+
+Zona
+
+&gt; 2500
+
+Istimewa
+
+2200 – 2499
+
+Luar Biasa
+
+1900 – 2199
+
+Normal
+
+1800 – 1899
+
+Pembinaan 1
+
+1700 – 1799
+
+Pembinaan 2
+
+1600 – 1699
+
+Pembinaan 3
+
+1500 – 1599
+
+Pembinaan 4
+
+&lt; 1500
+
+Intervensi Khusus
+
+
+
+Alur Inti Mekanisme
+
+
+
+2000 poin awal → Pelanggaran (poin −) / Achievement (poin +) → Point Transaction → Saldo poin saat ini → Zona poin
+
+
+
+13. Case / Pembinaan
+
+
+Case digunakan untuk mencatat proses penanganan lanjutan terhadap pelanggaran atau kejadian tertentu yang membutuhkan pembinaan, pendampingan, monitoring, atau tindakan khusus. Tidak semua pelanggaran otomatis membuat case. Case dapat dibuat berdasarkan laporan yang telah diverifikasi maupun langsung oleh Kesiswaan/BK. Setiap case memiliki status open, on_progress, atau closed, serta dapat memiliki banyak caseActions untuk mencatat seluruh tindakan selama proses penanganan. Penutupan case tidak menghapus riwayat kasus maupun transaksi poin siswa.
+
+
+
+Aturan Utama
+
+
+
+Tidak semua pelanggaran menghasilkan case
+
+
+
+Case dapat berasal dari reports atau dibuat langsung oleh Kesiswaan/BK
+
+
+
+Satu siswa dapat memiliki banyak case
+
+
+
+Satu case dapat memiliki banyak caseActions
+
+
+
+Status case: open → on_progress → closed
+
+
+
+Case memiliki start_date, target_date (opsional), dan closed_at ketika selesai
+
+
+
+Penanganan mengikuti SOP dan severity pelanggaran, bukan hanya jumlah poin
+
+
+
+Case dan poin dipisahkan; menutup case tidak menghapus atau membatalkan histori poin
+
+
+
+Seluruh riwayat tindakan tetap tersimpan
+
+
+
+14. Security &amp; Confidentiality
+
+
+Sistem menerapkan keamanan berbasis role dan permission untuk memastikan setiap pengguna hanya dapat mengakses data sesuai kewenangannya. Pengguna wajib melakukan authentication sebelum mengakses sistem, kemudian authorization menentukan fitur dan data yang dapat diakses. Data poin, laporan, dan kasus siswa dibatasi berdasarkan role dan cakupan akses. Informasi kasus bersifat rahasia. Password disimpan dalam bentuk hash, aktivitas penting mencatat pengguna yang melakukan tindakan, dan data histori penting tidak dapat dihapus atau diubah secara langsung.
+
+
+
+Aturan Utama
+
+
+
+Akses sistem berdasarkan role dan permission
+
+
+
+Kesiswaan/BK memiliki akses pengelolaan penuh
+
+
+
+Guru hanya dapat membuat laporan
+
+
+
+Wali Kelas dapat melihat poin siswa pada kelas yang menjadi tanggung jawabnya
+
+
+
+Siswa hanya dapat melihat data poin dirinya sendiri dan membuat laporan
+
+
+
+Data kasus siswa bersifat confidential
+
+
+
+Password disimpan dalam bentuk hash
+
+
+
+Aktivitas penting mencatat identitas pengguna melalui reported_by, verified_by, created_by, dan performed_by
+
+
+
+Histori poin, laporan, dan kasus tidak dihapus atau diedit langsung; koreksi menggunakan mekanisme yang telah ditentukan
+
+
+
+15. RBAC — Ringkasan Akses
+
+Fitur
+
+Guru
+
+Wali Kelas*
+
+Kesiswaan/BK
+
+Siswa
+
+Laporkan kejadian
+
+✅
+
+✅
+
+✅
+
+✅
+
+Lihat laporan sendiri
+
+✅
+
+✅
+
+✅
+
+✅
+
+Lihat hasil verifikasi laporan sendiri
+
+✅
+
+✅
+
+✅
+
+❌ detail internal
+
+Tentukan poin final
+
+❌
+
+❌
+
+✅
+
+❌
+
+Approve laporan
+
+❌
+
+❌
+
+✅
+
+❌
+
+Reject laporan
+
+❌
+
+❌
+
+✅
+
+❌
+
+Ubah saldo poin langsung
+
+❌
+
+❌
+
+❌*
+
+❌
+
+Koreksi transaksi
+
+❌
+
+❌
+
+✅
+
+❌
+
+Lihat riwayat poin resmi
+
+❌
+
+✅ siswa walinya
+
+✅
+
+✅ milik sendiri
+
+Kelola pembinaan
+
+❌
+
+✅ kelasnya
+
+✅
+
+❌
+
+Hapus transaksi
+
+❌
+
+❌
+
+❌
+
+❌
+
+
+* Wali Kelas = Guru yang mendapat permission tambahan sebagai wali dari satu kelas tertentu.
+
+
+
+Matriks Fitur per Modul
+
+Modul
+
+Fitur
+
+Kesiswaan/BK
+
+Guru
+
+Wali Kelas
+
+Siswa
+
+Dashboard
+
+Dashboard
+
+✅
+
+✅
+
+✅
+
+✅
+
+Dashboard
+
+Ringkasan data
+
+✅
+
+👁️
+
+👁️
+
+👁️
+
+Pelaporan
+
+Membuat laporan
+
+✅
+
+✅
+
+✅
+
+✅
+
+Pelaporan
+
+Melihat laporan sendiri
+
+✅
+
+👁️
+
+👁️
+
+👁️
+
+Pelaporan
+
+Melihat seluruh laporan
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pelaporan
+
+Verifikasi laporan
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pelaporan
+
+Approve laporan
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pelaporan
+
+Reject laporan
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pelaporan
+
+Catatan verifikasi
+
+✅
+
+❌
+
+❌
+
+❌
+
+Poin
+
+Melihat poin siswa
+
+✅
+
+❌
+
+👁️
+
+❌
+
+Poin
+
+Melihat poin sendiri
+
+✅
+
+✅
+
+✅
+
+✅
+
+Poin
+
+Melihat histori poin
+
+✅
+
+❌
+
+👁️
+
+👁️
+
+Poin
+
+Input achievement
+
+✅
+
+❌
+
+❌
+
+❌
+
+Poin
+
+Input transaksi pelanggaran
+
+✅
+
+❌
+
+❌
+
+❌
+
+Poin
+
+Reversal
+
+✅
+
+❌
+
+❌
+
+❌
+
+Poin
+
+Correction
+
+✅
+
+❌
+
+❌
+
+❌
+
+Kasus &amp; Pembinaan
+
+Melihat case
+
+✅
+
+❌
+
+👁️*
+
+👁️*
+
+Kasus &amp; Pembinaan
+
+Membuat case
+
+✅
+
+❌
+
+❌
+
+❌
+
+Kasus &amp; Pembinaan
+
+Mengelola case
+
+✅
+
+❌
+
+👁️*
+
+❌
+
+Kasus &amp; Pembinaan
+
+Menambahkan case action
+
+✅
+
+❌
+
+👁️*
+
+❌
+
+Kasus &amp; Pembinaan
+
+Monitoring
+
+✅
+
+❌
+
+👁️*
+
+❌
+
+Kasus &amp; Pembinaan
+
+Menutup case
+
+✅
+
+❌
+
+❌
+
+❌
+
+Master Data
+
+Data siswa
+
+✅
+
+❌
+
+👁️*
+
+❌
+
+Master Data
+
+Data kelas
+
+✅
+
+❌
+
+👁️*
+
+❌
+
+Master Data
+
+Tahun ajaran
+
+✅
+
+❌
+
+❌
+
+❌
+
+Master Data
+
+Aturan pelanggaran
+
+✅
+
+❌
+
+❌
+
+❌
+
+Master Data
+
+Aturan achievement
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pengguna &amp; Akses
+
+Kelola user
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pengguna &amp; Akses
+
+Atur role
+
+✅
+
+❌
+
+❌
+
+❌
+
+Pengguna &amp; Akses
+
+Atur permission Wali Kelas
+
+✅
+
+❌
+
+❌
+
+❌
+
+
+* Berlaku hanya untuk siswa/kelas yang menjadi tanggung jawab Wali Kelas tersebut.
+
+
+
+16. UI/UX — Modul &amp; Struktur Navigasi
+
+Modul
+
+Fitur Utama
+
+Dashboard
+
+Ringkasan sesuai role
+
+Pelaporan
+
+Buat, lihat, verifikasi, approve/reject
+
+Poin
+
+Saldo, histori, achievement, reversal/correction
+
+Kasus &amp; Pembinaan
+
+Case, tindakan, monitoring, evaluasi, penutupan
+
+Master Data
+
+Siswa, kelas, tahun ajaran, aturan pelanggaran, achievement
+
+Pengguna &amp; Akses
+
+Akun, role, permission Wali Kelas
+
+
+
+Navigasi — Kesiswaan/BK
+
+
+
+Dashboard
+
+
+
+Pelaporan
+
+
+
+Semua Laporan
+
+
+
+Verifikasi Laporan
+
+
+
+Poin
+
+
+
+Data Poin Siswa
+
+
+
+Riwayat Transaksi
+
+
+
+Achievement
+
+
+
+Kasus &amp; Pembinaan
+
+
+
+Kasus Aktif
+
+
+
+Semua Kasus
+
+
+
+Riwayat Kasus
+
+
+
+Master Data
+
+
+
+Siswa
+
+
+
+Kelas
+
+
+
+Tahun Ajaran
+
+
+
+Aturan Pelanggaran
+
+
+
+Aturan Achievement
+
+
+
+Pengguna &amp; Akses
+
+
+
+Manajemen User
+
+
+
+Navigasi — Guru (biasa)
+
+
+
+Dashboard
+
+
+
+Pelaporan
+
+
+
+Buat Laporan
+
+
+
+Laporan Saya
+
+
+
+Navigasi — Guru + Permission Wali Kelas
+
+
+
+Dashboard
+
+
+
+Pelaporan
+
+
+
+Buat Laporan
+
+
+
+Laporan Saya
+
+
+
+Wali Kelas
+
+
+
+Siswa Kelas Saya
+
+
+
+Poin Siswa
+
+
+
+Pembinaan*
+
+
+
+Navigasi — Siswa
+
+
+
+Dashboard
+
+
+
+Poin Saya
+
+
+
+Riwayat Poin
+
+
+
+Pelaporan
+
+
+
+Laporkan Pelanggaran
+
+
+Siswa tidak memiliki akses menu: Data Siswa, Semua Laporan, Semua Poin, Master Data, Manajemen User.
+
+
+
+17. Alur (Flow) Sistem
+
+
+
+Flow Utama Sistem
+
+
+
+Pelanggaran terjadi → Guru/Siswa melapor → status PENDING
+
+
+
+Kesiswaan/BK melakukan verifikasi:
+
+
+
+Reject → selesai
+
+
+
+Approve → tentukan poin final → point transaction dibuat → poin siswa berubah
+
+
+
+Setelah poin berubah, sistem/BK menentukan apakah perlu penanganan lanjutan:
+
+
+
+Tidak perlu → selesai
+
+
+
+Perlu → dibuat Case → proses pembinaan → monitoring → case ditutup (closed)
+
+
+
+Flow — Kesiswaan/BK
+
+
+
+Login → Dashboard, lalu dapat mengakses:
+
+
+
+Pelaporan: lihat laporan masuk → pilih laporan → verifikasi (reject = selesai; approve = tentukan pelanggaran/poin final → buat point transaction → poin siswa diperbarui)
+
+
+
+Poin: lihat data/histori poin → tambah achievement / reversal / correction
+
+
+
+Kasus &amp; Pembinaan: buat/pilih case → tambah case action → monitoring &amp; evaluasi → closed
+
+
+
+Master Data / Pengguna &amp; Akses
+
+
+
+Flow — Guru
+
+
+
+Login → Dashboard → Pelaporan → Buat Laporan → pilih siswa → pilih pelanggaran → masukkan tanggal + deskripsi → kirim → status PENDING → menunggu verifikasi Kesiswaan/BK → approved/rejected
+
+
+
+Flow — Guru + Permission Wali Kelas
+
+
+
+Login → Dashboard → Wali Kelas → Siswa Kelas Saya → pilih siswa → lihat poin + riwayat
+
+
+
+Untuk pembinaan: Siswa Kelas Saya → Kasus/Pembinaan → lihat/kelola sesuai permission
+
+
+
+Flow — Siswa
+
+
+
+Login → Dashboard, lalu dapat mengakses:
+
+
+
+Poin Saya: saldo poin → zona poin → riwayat poin
+
+
+
+Pelaporan: laporkan pelanggaran → pilih siswa → isi laporan → kirim → status PENDING
+
+
+
+Struktur Halaman (ringkas)
+
+
+
+Kesiswaan/BK: Dashboard, Pelaporan (Semua Laporan, Detail/Verifikasi), Poin (Data Poin Siswa, Detail/Riwayat), Kasus &amp; Pembinaan (Daftar Kasus, Detail Kasus), Master Data (Siswa, Kelas, Tahun Ajaran, Pelanggaran, Achievement), Pengguna &amp; Akses (Manajemen User)
+
+
+
+Guru: Dashboard, Pelaporan (Buat Laporan, Laporan Saya)
+
+
+
+Wali Kelas: Dashboard, Pelaporan, Wali Kelas (Siswa Kelas Saya, Poin Siswa, Pembinaan*)
+
+
+
+Siswa: Dashboard, Poin Saya (Riwayat Poin), Laporkan Pelanggaran
+
+
+
+18. Catatan Reviewer — Temuan yang Perlu Ditindaklanjuti
+
+
+Bagian ini merangkum gap dan inkonsistensi yang ditemukan saat merapikan dokumen, untuk didiskusikan tim sebelum masuk development.
+
+
+
+Scope of Work belum menyebut modul Case &amp; Pembinaan secara eksplisit, padahal dibahas rinci (skema, RBAC, flow) di bagian lain dokumen — perlu diputuskan masuk In-Scope atau Out-of-Scope.
+
+
+
+Auth disebut memakai &quot;NIS&quot;, tapi field database memakai nisn (Nomor Induk Siswa Nasional) — NIS dan NISN adalah dua identitas berbeda; perlu dipastikan mana yang dipakai untuk login.
+
+
+
+US-04 (Buku Catatan Digital Siswa) belum memiliki Acceptance Criteria.
+
+
+
+Success Metrics (KPI) masih kualitatif (&quot;guru tidak kesulitan mencatat poin&quot;) — sebaiknya diubah menjadi metrik terukur, misalnya waktu rata-rata input laporan atau persentase laporan terverifikasi dalam 24 jam.
+
+
+
+NFR belum mencerminkan risiko &quot;Lonjakan Akses / Server Down&quot; yang sudah diidentifikasi sendiri di tabel Risiko — perlu target concurrent users / strategi scaling yang konkret.
+
+
+
+Belum ada spesifikasi untuk upload foto bukti: format file yang diizinkan, ukuran maksimum, dan kebijakan akses (mengingat ini data sensitif terkait siswa).
+
+
+
+Belum ada mekanisme notifikasi (in-app/email) untuk memberi tahu pelapor saat laporan di-approve/reject, atau memberi tahu BK saat ada laporan baru.
+
+
+
+Field status siswa (aktif/lulus/nonaktif/pindah) belum punya aturan bisnis terkait efeknya ke akses login dan visibilitas poin/laporan.
+
+
+
+Belum dijelaskan apakah saldo poin 2000 di awal berlaku sekali seumur sekolah atau direset ulang setiap tahun ajaran baru.
+
+
+
+US-05 (Bulk Import) belum menjelaskan bagaimana password default dibuat untuk akun baru — perlu dihubungkan dengan mekanisme di US-08.

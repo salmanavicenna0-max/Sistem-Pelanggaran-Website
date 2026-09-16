@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthenticatedSessionController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PasswordChangeController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\PointController;
 use App\Http\Controllers\CaseController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\PasswordChangeController;
+use App\Http\Controllers\PointController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : redirect()->route('login'));
@@ -46,17 +46,24 @@ Route::middleware(['auth', 'active', 'password.changed'])->group(function (): vo
     Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
     // --- Poin ---
-    Route::get('/poin', [PointController::class, 'index'])->name('points.siswa');
+    Route::get('/poin', [PointController::class, 'index'])->name('points.index');
+    Route::get('/poin-saya', [PointController::class, 'index'])->name('points.siswa');
+    Route::get('/poin-history', [PointController::class, 'index'])->name('points.history');
     Route::get('/poin/{student_id}/riwayat', [PointController::class, 'riwayat'])->middleware('role:kesiswaan_bk')->name('points.riwayat');
+    Route::post('/poin/manual-achievement', [PointController::class, 'storeManualAchievement'])->middleware('role:kesiswaan_bk')->name('points.manual-achievement');
+    Route::post('/poin/correction', [PointController::class, 'storeCorrection'])->middleware('role:kesiswaan_bk')->name('points.correction');
+    Route::post('/poin/{transaction}/reversal', [PointController::class, 'storeReversal'])->middleware('role:kesiswaan_bk')->name('points.reversal');
 
     // --- Master Data ---
     Route::get('/master/aturan', [MasterDataController::class, 'rules'])->name('master.rules');
     Route::get('/master/siswa', [MasterDataController::class, 'students'])->name('master.students');
     Route::get('/master/export', [MasterDataController::class, 'export'])->name('master.export');
+    Route::get('/master/export/pdf', [MasterDataController::class, 'exportPdf'])->name('master.export.pdf');
+    Route::get('/master/export/excel', [MasterDataController::class, 'exportExcel'])->name('master.export.excel');
 });
 
-// --- Case & Action Routes (added for completeness) ---
-Route::middleware(['auth', 'active', 'password.changed'])->group(function (): void {
+// --- Case & Action Routes ---
+Route::middleware(['auth', 'active', 'password.changed', 'role:kesiswaan_bk,guru'])->group(function (): void {
     Route::get('/kasus', [CaseController::class, 'index'])->name('cases.index');
     Route::get('/kasus/create', [CaseController::class, 'create'])->name('cases.create');
     Route::post('/kasus', [CaseController::class, 'store'])->name('cases.store');
