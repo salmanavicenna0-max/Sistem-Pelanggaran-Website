@@ -19,7 +19,7 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
+            <table id="dataTable" class="min-w-full divide-y divide-slate-100 text-sm">
                 <thead class="bg-slate-50 text-left text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4">#</th>
@@ -93,4 +93,12 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable();
+    });
+</script>
+@endpush
 @endsection

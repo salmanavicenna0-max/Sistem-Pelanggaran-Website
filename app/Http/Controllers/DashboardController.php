@@ -38,26 +38,23 @@ class DashboardController extends Controller
 
         // --- GURU: Standard ---
         if ($user->role === 'guru') {
-            $student = $user->student;
-            $reports = Report::query()
-                ->when($student, fn ($q) => $q->where('student_id', $student->id))
+            $baseQuery = Report::query()->where(function ($q) use ($user) {
+                $q->where('reported_by', $user->id)
+                  ->orWhereHas('reporter', function ($q2) {
+                      $q2->where('role', 'kesiswaan_bk');
+                  });
+            });
+
+            $reports = (clone $baseQuery)
                 ->latest('created_at')
                 ->take(10)
                 ->get();
 
-            $totalReports = Report::query()
-                ->when($student, fn ($q) => $q->where('student_id', $student->id))
-                ->count();
-
-            $approvedReports = Report::query()
-                ->when($student, fn ($q) => $q->where('student_id', $student->id))
-                ->where('status', 'approved')
-                ->count();
-
-            $pendingReports = Report::query()
-                ->when($student, fn ($q) => $q->where('student_id', $student->id))
-                ->where('status', 'pending')
-                ->count();
+            $totalReports = (clone $baseQuery)->count();
+            $approvedReports = (clone $baseQuery)->where('status', 'approved')->count();
+            $pendingReports = (clone $baseQuery)->where('status', 'pending')->count();
+            
+            $student = null;
 
             return view('dashboard.guru', compact('student', 'reports', 'totalReports', 'approvedReports', 'pendingReports'));
         }

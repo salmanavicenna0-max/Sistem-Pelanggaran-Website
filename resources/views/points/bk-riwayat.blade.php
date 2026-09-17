@@ -11,9 +11,6 @@
             <button onclick="document.getElementById('modal-achievement').classList.remove('hidden')" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200">
                 + Prestasi Manual
             </button>
-            <button onclick="document.getElementById('modal-correction').classList.remove('hidden')" class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors shadow-sm shadow-amber-200">
-                ⚖️ Koreksi Saldo
-            </button>
             <a href="{{ route('points.index') }}" class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-[#64748B] hover:bg-slate-100 transition-colors">
                 Kembali
             </a>
@@ -165,37 +162,7 @@
     </div>
 </div>
 
-{{-- Modal: Correction --}}
-<div id="modal-correction" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-        <form action="{{ route('points.correction') }}" method="POST">
-            @csrf
-            <input type="hidden" name="student_id" value="{{ $student->id }}">
-            <div class="p-6 border-b border-slate-100">
-                <h3 class="text-xl font-bold text-[#182A3C]">Koreksi Saldo Poin</h3>
-                <p class="text-sm text-[#64748B]">Sesuaikan saldo akhir poin (jika terjadi selisih sistem).</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-[#182A3C] mb-1.5">Saldo Saat Ini</label>
-                    <input type="text" readonly value="{{ $points }}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-500 font-bold">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-[#182A3C] mb-1.5">Saldo Target Baru</label>
-                    <input type="number" name="target_balance" required class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" placeholder="Masukkan saldo benar">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-[#182A3C] mb-1.5">Alasan Koreksi</label>
-                    <textarea name="reason" required rows="2" class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" placeholder="Kenapa dikoreksi?"></textarea>
-                </div>
-            </div>
-            <div class="p-6 bg-slate-50 flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('modal-correction').classList.add('hidden')" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-200 transition-colors">Batal</button>
-                <button type="submit" class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors shadow-sm shadow-amber-200">Simpan Koreksi</button>
-            </div>
-        </form>
-    </div>
-</div>
+
 
 {{-- Modal: Reversal --}}
 <div id="modal-reversal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">

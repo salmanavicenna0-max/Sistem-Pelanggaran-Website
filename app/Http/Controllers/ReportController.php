@@ -24,7 +24,7 @@ class ReportController extends Controller
         return view('reports.siswa-create', compact('violationRules', 'achievementRules', 'students'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, PointTransactionService $pointService): RedirectResponse
     {
         $validated = $request->validate([
             'student_nis' => ['required', 'string', 'max:255'],
@@ -38,14 +38,17 @@ class ReportController extends Controller
 
         $student = Student::where('nis', $validated['student_nis'])->firstOrFail();
 
+        $isBK = auth()->user()->hasRole('kesiswaan_bk');
+
         $reportData = [
             'student_id' => $student->id,
             'reported_by' => auth()->id(),
-            'verified_by' => null,
+            'verified_by' => $isBK ? auth()->id() : null,
+            'verified_at' => $isBK ? now() : null,
             'type' => $validated['type'],
             'occurred_on' => $validated['occurred_on'],
             'description' => $validated['description'],
-            'status' => 'pending',
+            'status' => $isBK ? 'approved' : 'pending',
             'violation_rule_id' => $validated['type'] === 'violation' ? $validated['violation_rule_id'] : null,
             'achievement_rule_id' => $validated['type'] === 'achievement' ? $validated['achievement_rule_id'] : null,
         ];
@@ -61,12 +64,20 @@ class ReportController extends Controller
                 'disk' => 'public',
                 'path' => $path,
                 'original_name' => $request->file('photo')->getClientOriginalName(),
-                'mime_type' => $request->file('photo')->getClientOriginalMimeType(),
+                'mime_type' => $request->file('photo')->getClientMimeType(),
                 'size' => $request->file('photo')->getSize(),
             ]);
         }
 
-        return redirect()->route('dashboard')->with('status', 'Laporan berhasil dikirim. Status: pending menunggu verifikasi BK.');
+        if ($report->status === 'approved') {
+            $pointService->recordReportApproval($report, auth()->id());
+        }
+
+        $msg = $report->status === 'approved' 
+            ? 'Laporan berhasil dicatat dan poin langsung diperbarui.'
+            : 'Laporan berhasil dikirim. Status: pending menunggu verifikasi BK.';
+
+        return redirect()->route('dashboard')->with('status', $msg);
     }
 
     // --- BK / Kesiswaan: Daftar laporan pending ---

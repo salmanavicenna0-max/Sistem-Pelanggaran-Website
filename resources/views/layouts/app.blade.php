@@ -6,6 +6,11 @@
     <title>{{ $title ?? 'Sistem Pencatatan Pelanggaran Siswa' }} - SMAN 6 Bandung</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- jQuery & DataTables -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" />
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 </head>
 <body class="bg-[#F5F9FA] text-[#182A3C] min-h-full flex antialiased font-sans">
 
